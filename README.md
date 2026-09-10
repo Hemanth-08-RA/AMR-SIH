@@ -1,5 +1,9 @@
 # AMR-SIH: Autonomous Mobile Robot (Mecanum Wheel System)
 
+<p align="center">
+  <img src="assets/amr_chassis_render.jpeg" alt="AMR Mecanum Chassis 3D Render" width="750"/>
+</p>
+
 An industrial-grade ROS 2 workspace designed for 4-wheel **Mecanum Autonomous Mobile Robots (AMR)**. Built for hardware execution on Raspberry Pi with **lgpio** motor control, **YDLIDAR X2** LiDAR scanning, **SLAM Toolbox** mapping, and **Nav2** autonomous navigation with Xbox controller teleoperation.
 
 ---
@@ -67,7 +71,12 @@ graph TD
 AMR-SIH/
 ├── .gitignore
 ├── README.md
-├── mobile_base_1 step.STEP     # 3D CAD STEP model of the AMR mobile base
+├── assets/
+│   └── amr_chassis_render.jpeg        # 3D CAD render image of the Mecanum AMR chassis
+├── cad_models/
+│   ├── mobile_base_1.STEP             # 3D STEP CAD model of the mobile base
+│   ├── RA_robotic_arm.STEP            # 3D STEP CAD model of the robotic arm
+│   └── mobile_base_1_robotic_arm.STEP  # Integrated Mobile Base + Robotic Arm 3D STEP model
 └── mecanum_ws/
     └── src/
         ├── mecanum_bringup/          # Bringup package for total robot launch
