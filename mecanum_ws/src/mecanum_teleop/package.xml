@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<package format="3">
+
+  <name>mecanum_teleop</name>
+
+  <version>0.0.0</version>
+
+  <description>
+    Mecanum robot teleoperation, mapping and autonomous navigation
+  </description>
+
+  <maintainer email="mobile@localhost">mobile</maintainer>
+
+  <license>Apache License 2.0</license>
+
+
+  <!-- ================================================== -->
+  <!-- ROS 2 PYTHON -->
+  <!-- ================================================== -->
+
+  <depend>rclpy</depend>
+
+
+  <!-- ================================================== -->
+  <!-- CONTROLLER / JOYSTICK -->
+  <!-- ================================================== -->
+
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>std_msgs</depend>
+
+
+  <!-- ================================================== -->
+  <!-- TF -->
+  <!-- ================================================== -->
+
+  <depend>tf2_ros</depend>
+
+
+  <!-- ================================================== -->
+  <!-- NAV2 -->
+  <!-- ================================================== -->
+
+  <depend>nav2_msgs</depend>
+  <depend>nav2_bringup</depend>
+
+
+  <!-- ================================================== -->
+  <!-- SLAM -->
+  <!-- ================================================== -->
+
+
+
+  <!-- ================================================== -->
+  <!-- TESTING -->
+  <!-- ================================================== -->
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+
+</package>

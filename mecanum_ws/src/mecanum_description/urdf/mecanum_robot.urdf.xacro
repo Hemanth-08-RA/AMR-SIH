@@ -1,0 +1,333 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"
+       xmlns:gz="http://gazebosim.org/schema"
+       name="mecanum_robot">
+
+  <!-- ===================================================== -->
+  <!-- ROBOT PARAMETERS                                      -->
+  <!-- ===================================================== -->
+
+  <xacro:property name="robot_length" value="0.55"/>
+  <xacro:property name="robot_width"  value="0.45"/>
+  <xacro:property name="robot_height" value="0.15"/>
+
+  <xacro:property name="wheel_radius" value="0.05"/>
+  <xacro:property name="wheel_width"  value="0.04"/>
+
+  <xacro:property name="wheel_x" value="0.20"/>
+  <xacro:property name="wheel_y" value="0.20"/>
+
+  <xacro:property name="laser_height" value="0.02"/>
+
+  <!-- ===================================================== -->
+  <!-- MATERIALS                                             -->
+  <!-- ===================================================== -->
+
+  <material name="body_material">
+    <color rgba="0.15 0.15 0.15 1.0"/>
+  </material>
+
+  <material name="wheel_material">
+    <color rgba="0.05 0.05 0.05 1.0"/>
+  </material>
+
+  <material name="laser_material">
+    <color rgba="0.8 0.1 0.1 1.0"/>
+  </material>
+
+  <!-- ===================================================== -->
+  <!-- BASE LINK                                              -->
+  <!-- ===================================================== -->
+
+  <link name="base_link">
+
+    <visual>
+      <origin xyz="0 0 0.175" rpy="0 0 0"/>
+      <geometry>
+        <box size="${robot_length} ${robot_width} ${robot_height}"/>
+      </geometry>
+      <material name="body_material"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0.175" rpy="0 0 0"/>
+      <geometry>
+        <box size="${robot_length} ${robot_width} ${robot_height}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0.175" rpy="0 0 0"/>
+      <mass value="10.0"/>
+
+      <inertia
+        ixx="0.5"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.5"
+        iyz="0.0"
+        izz="0.5"/>
+    </inertial>
+
+  </link>
+
+  <!-- ===================================================== -->
+  <!-- WHEEL MACRO                                            -->
+  <!-- ===================================================== -->
+
+  <xacro:macro name="wheel" params="name x y">
+
+    <link name="${name}">
+
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder
+            radius="${wheel_radius}"
+            length="${wheel_width}"/>
+        </geometry>
+        <material name="wheel_material"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder
+            radius="${wheel_radius}"
+            length="${wheel_width}"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <mass value="1.0"/>
+        <inertia
+          ixx="0.001"
+          ixy="0.0"
+          ixz="0.0"
+          iyy="0.001"
+          iyz="0.0"
+          izz="0.001"/>
+      </inertial>
+
+    </link>
+
+    <joint name="${name}_joint" type="continuous">
+
+      <parent link="base_link"/>
+      <child link="${name}"/>
+
+      <origin
+        xyz="${x} ${y} ${wheel_radius}"
+        rpy="0 0 0"/>
+
+      <axis xyz="0 1 0"/>
+
+      <dynamics damping="0.2"/>
+
+    </joint>
+
+  </xacro:macro>
+
+  <!-- ===================================================== -->
+  <!-- FOUR MECANUM WHEELS                                    -->
+  <!-- ===================================================== -->
+
+  <xacro:wheel
+    name="front_left_wheel"
+    x="${wheel_x}"
+    y="${wheel_y}"/>
+
+  <xacro:wheel
+    name="front_right_wheel"
+    x="${wheel_x}"
+    y="-${wheel_y}"/>
+
+  <xacro:wheel
+    name="rear_left_wheel"
+    x="-${wheel_x}"
+    y="${wheel_y}"/>
+
+  <xacro:wheel
+    name="rear_right_wheel"
+    x="-${wheel_x}"
+    y="-${wheel_y}"/>
+
+  <!-- ===================================================== -->
+  <!-- MECANUM FRICTION MODEL                                 -->
+  <!-- ===================================================== -->
+
+  <gazebo reference="front_left_wheel">
+    <collision>
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>0.0</mu2>
+            <fdir1 gz:expressed_in="base_link">1 -1 0</fdir1>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </gazebo>
+
+  <gazebo reference="front_right_wheel">
+    <collision>
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>0.0</mu2>
+            <fdir1 gz:expressed_in="base_link">1 1 0</fdir1>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </gazebo>
+
+  <gazebo reference="rear_left_wheel">
+    <collision>
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>0.0</mu2>
+            <fdir1 gz:expressed_in="base_link">1 1 0</fdir1>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </gazebo>
+
+  <gazebo reference="rear_right_wheel">
+    <collision>
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>0.0</mu2>
+            <fdir1 gz:expressed_in="base_link">1 -1 0</fdir1>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </gazebo>
+
+  <!-- ===================================================== -->
+  <!-- ROS 2 CONTROL                                         -->
+  <!-- ===================================================== -->
+
+  <ros2_control name="GazeboSimSystem" type="system">
+
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+
+    <joint name="front_left_wheel_joint">
+
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+
+    </joint>
+
+    <joint name="front_right_wheel_joint">
+
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+
+    </joint>
+
+    <joint name="rear_left_wheel_joint">
+
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+
+    </joint>
+
+    <joint name="rear_right_wheel_joint">
+
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+
+    </joint>
+
+  </ros2_control>
+
+  <!-- ===================================================== -->
+  <!-- GZ ROS 2 CONTROL PLUGIN                               -->
+  <!-- ===================================================== -->
+
+  <gazebo>
+
+    <plugin
+      filename="gz_ros2_control-system"
+      name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+
+      <parameters>
+        $(find mecanum_description)/config/mecanum_drive_controller.yaml
+      </parameters>
+
+      <ros>
+        <remapping>
+          /mecanum_drive_controller/reference:=/cmd_vel
+        </remapping>
+
+        <remapping>
+          /mecanum_drive_controller/odom:=/odom
+        </remapping>
+      </ros>
+
+    </plugin>
+
+  </gazebo>
+
+  <!-- ===================================================== -->
+  <!-- LASER FRAME                                            -->
+  <!-- ===================================================== -->
+
+  <link name="laser_frame">
+
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder
+          radius="0.035"
+          length="0.04"/>
+      </geometry>
+      <material name="laser_material"/>
+    </visual>
+
+  </link>
+
+  <joint name="laser_joint" type="fixed">
+
+    <parent link="base_link"/>
+    <child link="laser_frame"/>
+
+    <origin
+      xyz="0 0 ${laser_height}"
+      rpy="0 0 0"/>
+
+  </joint>
+
+</robot>
