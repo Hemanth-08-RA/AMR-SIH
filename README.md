@@ -67,6 +67,7 @@ graph TD
 AMR-SIH/
 ├── .gitignore
 ├── README.md
+├── mobile_base_1 step.STEP     # 3D CAD STEP model of the AMR mobile base
 └── mecanum_ws/
     └── src/
         ├── mecanum_bringup/          # Bringup package for total robot launch
