@@ -10,31 +10,31 @@ An industrial-grade ROS 2 workspace designed for 4-wheel **Mecanum Autonomous Mo
 
 ```mermaid
 graph TD
-    subgraph Hardware & Controls
-        JOY[Xbox Controller /joy]
-        LIDAR[YDLIDAR X2 /scan]
-        GPIO[Raspberry Pi GPIO lgpio]
-        L298N[L298N Motor Drivers]
-        MOTORS[4x Mecanum Wheels FL, FR, RL, RR]
+    subgraph HW ["Hardware & Controls"]
+        JOY["Xbox Controller (/joy)"]
+        LIDAR["YDLIDAR X2 (/scan)"]
+        GPIO["Raspberry Pi GPIO (lgpio)"]
+        L298N["L298N Motor Drivers"]
+        MOTORS["4x Mecanum Wheels (FL, FR, RL, RR)"]
     end
 
-    subgraph mecanum_teleop Package
-        JOY_NODE[joy_node]
-        MODE_MGR[mode_manager]
-        MAN_TELEOP[manual_teleop]
-        GOAL_MGR[goal_manager]
-        CMD_MUX[command_mux]
-        NAV_BRIDGE[nav2_cmd_bridge]
-        ODOM_NODE[open_loop_odom]
+    subgraph TELEOP ["mecanum_teleop Package"]
+        JOY_NODE["joy_node"]
+        MODE_MGR["mode_manager"]
+        MAN_TELEOP["manual_teleop"]
+        GOAL_MGR["goal_manager"]
+        CMD_MUX["command_mux"]
+        NAV_BRIDGE["nav2_cmd_bridge"]
+        ODOM_NODE["open_loop_odom"]
     end
 
-    subgraph Navigation & SLAM Stack
-        SLAM[slam_toolbox]
-        NAV2[Nav2 Stack]
+    subgraph NAV ["Navigation & SLAM Stack"]
+        SLAM["slam_toolbox"]
+        NAV2["Nav2 Stack"]
     end
 
-    subgraph mecanum_motor Package
-        MOTOR_NODE[mecanum_robot GPIO Controller]
+    subgraph MOTOR ["mecanum_motor Package"]
+        MOTOR_NODE["mecanum_robot GPIO Controller"]
     end
 
     JOY --> JOY_NODE
@@ -48,7 +48,9 @@ graph TD
     NAV_BRIDGE -->|/autonomous_cmd_vel| CMD_MUX
 
     CMD_MUX -->|/cmd_vel| MOTOR_NODE
-    MOTOR_NODE --> GPIO --> L298N --> MOTORS
+    MOTOR_NODE --> GPIO
+    GPIO --> L298N
+    L298N --> MOTORS
 
     LIDAR -->|/scan| SLAM
     LIDAR -->|/scan| NAV2
